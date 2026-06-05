@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShoppingBag, Coffee, Car, Home, Wallet } from 'lucide-react';
 
-const ExpenseItem = ({ title, date, amount, category, type }) => {
+const ExpenseItem = ({ title, date, amount, category, type, index = 0 }) => {
   const getIcon = () => {
     switch(category) {
       case 'Food': return <Coffee size={20} className="text-secondary" />;
@@ -15,7 +15,10 @@ const ExpenseItem = ({ title, date, amount, category, type }) => {
   const isIncome = type === 'income';
 
   return (
-    <div className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 rounded-lg">
+    <div 
+      className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 rounded-lg animate-fade-in-up"
+      style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'both' }}
+    >
       <div className="flex items-center gap-4">
         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isIncome ? 'bg-primary' : 'bg-white/90'}`}>
           {getIcon()}
