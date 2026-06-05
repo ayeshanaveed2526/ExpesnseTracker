@@ -1,7 +1,12 @@
 import React from 'react';
-import { ShoppingBag, Coffee, Car, Home, Wallet } from 'lucide-react';
+import { ShoppingBag, Coffee, Car, Home, Wallet, Pencil, Trash2 } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
 
-const ExpenseItem = ({ title, date, amount, category, type, index = 0 }) => {
+const ExpenseItem = ({ id, title, date, amount, category, type, index = 0 }) => {
+  const context = useOutletContext();
+  const onEdit = context?.onEdit;
+  const onDelete = context?.onDelete;
+
   const getIcon = () => {
     switch(category) {
       case 'Food': return <Coffee size={20} className="text-secondary" />;
@@ -16,22 +21,51 @@ const ExpenseItem = ({ title, date, amount, category, type, index = 0 }) => {
 
   return (
     <div 
-      className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-0 rounded-lg animate-fade-in-up"
+      className="flex items-center justify-between p-4 hover:bg-glass transition-colors border-b border-border-main last:border-0 rounded-lg animate-fade-in-up group"
       style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'both' }}
     >
       <div className="flex items-center gap-4">
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isIncome ? 'bg-primary' : 'bg-white/90'}`}>
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${isIncome ? 'bg-primary shadow-primary/20' : 'bg-surface-bright shadow-white/10'}`}>
           {getIcon()}
         </div>
         <div>
-          <h4 className="font-semibold text-white">{title}</h4>
-          <p className="text-sm text-white/50">{date}</p>
+          <h4 className="font-semibold text-text-main">{title}</h4>
+          <div className="flex items-center gap-2 text-sm text-text-muted">
+            <span>{date}</span>
+            <span>•</span>
+            <span>{category}</span>
+          </div>
         </div>
       </div>
-      <div className={`text-right font-bold flex items-center ${isIncome ? 'text-primary' : 'text-danger'}`}>
-        {isIncome ? '+' : '-'}
-        <span className="mx-1">Rs.</span>
-        {amount.toLocaleString('en-PK')}
+      
+      <div className="flex items-center gap-4">
+        <div className="text-right">
+          <span className={`font-bold block ${isIncome ? 'text-primary' : 'text-text-main'}`}>
+            {isIncome ? '+' : '-'} Rs. {amount.toLocaleString('en-PK')}
+          </span>
+        </div>
+        
+        {/* Action Buttons (visible on hover) */}
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          {onEdit && (
+            <button 
+              onClick={() => onEdit({ id, title, date, amount, category, type })}
+              className="p-2 text-text-muted hover:text-primary transition-colors rounded-lg hover:bg-glass"
+              title="Edit"
+            >
+              <Pencil size={16} />
+            </button>
+          )}
+          {onDelete && (
+            <button 
+              onClick={() => onDelete(id)}
+              className="p-2 text-text-muted hover:text-danger transition-colors rounded-lg hover:bg-glass"
+              title="Delete"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

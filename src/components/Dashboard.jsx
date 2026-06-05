@@ -16,9 +16,9 @@ const Dashboard = () => {
           <ExpenseChart expenses={expenses} />
         </div>
         
-        <div className="bg-surface-bright/40 backdrop-blur-lg rounded-2xl border border-white/10 p-4 md:p-6 animate-fade-in-up hover:border-white/20 transition-all duration-300" style={{ animationDelay: '0.2s' }}>
+        <div className="bg-surface-bright/40 backdrop-blur-lg rounded-2xl border border-border-main p-4 md:p-6 animate-fade-in-up hover:border-border-main transition-all duration-300" style={{ animationDelay: '0.2s' }}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-semibold text-white">Recent Transactions</h2>
+            <h2 className="text-lg font-semibold text-text-main">Recent Transactions</h2>
             <Link to="/transactions" className="text-primary text-sm font-medium hover:underline">View All</Link>
           </div>
           {/* Show only top 4 recent transactions on dashboard */}

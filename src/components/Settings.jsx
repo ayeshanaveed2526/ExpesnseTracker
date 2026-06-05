@@ -1,43 +1,50 @@
 import React from 'react';
+import { useOutletContext } from 'react-router-dom';
 
 const Settings = () => {
+  const { theme, toggleTheme } = useOutletContext();
+  const isLight = theme === 'light';
+
   return (
-    <div className="bg-surface-bright/40 backdrop-blur-lg rounded-2xl border border-white/10 p-4 md:p-8 animate-fade-in-up max-w-2xl mx-auto shadow-2xl">
-      <h2 className="text-xl font-bold text-white mb-8">Settings</h2>
+    <div className="bg-surface-bright/40 backdrop-blur-lg rounded-2xl border border-border-main p-4 md:p-8 animate-fade-in-up max-w-2xl mx-auto shadow-2xl">
+      <h2 className="text-xl font-bold text-text-main mb-8">Settings</h2>
       
       <div className="space-y-8">
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">Profile Information</h3>
+          <h3 className="text-lg font-semibold text-text-main mb-4">Profile Information</h3>
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1">Full Name</label>
-              <input type="text" defaultValue="John Doe" className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary" />
+              <label className="block text-sm font-medium text-text-muted mb-1">Full Name</label>
+              <input type="text" defaultValue="John Doe" className="w-full bg-surface border border-border-main rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-white/70 mb-1">Email Address</label>
-              <input type="email" defaultValue="john@example.com" className="w-full bg-surface border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary" />
+              <label className="block text-sm font-medium text-text-muted mb-1">Email Address</label>
+              <input type="email" defaultValue="john@example.com" className="w-full bg-surface border border-border-main rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary" />
             </div>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4">Preferences</h3>
+          <h3 className="text-lg font-semibold text-text-main mb-4">Preferences</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-surface rounded-xl border border-white/5">
+            <div className="flex items-center justify-between p-4 bg-surface rounded-xl border border-border-main">
               <div>
-                <h4 className="font-medium text-white">Dark Mode</h4>
-                <p className="text-sm text-white/50">Turn on dark mode</p>
+                <h4 className="font-medium text-text-main">Light Mode</h4>
+                <p className="text-sm text-text-muted">Turn on light mode</p>
               </div>
-              <div className="w-12 h-6 bg-primary rounded-full relative cursor-pointer shadow-lg shadow-primary/20">
-                <div className="absolute right-1 top-1 bg-surface-bright w-4 h-4 rounded-full"></div>
+              <div 
+                onClick={toggleTheme}
+                className={`w-12 h-6 rounded-full relative cursor-pointer shadow-lg shadow-primary/20 transition-colors ${isLight ? 'bg-primary' : 'bg-surface-bright border border-border-main'}`}
+              >
+                <div className={`absolute top-1 w-4 h-4 rounded-full transition-all ${isLight ? 'right-1 bg-surface-bright' : 'left-1 bg-primary'}`}></div>
               </div>
             </div>
-            <div className="flex items-center justify-between p-4 bg-surface rounded-xl border border-white/5">
+            <div className="flex items-center justify-between p-4 bg-surface rounded-xl border border-border-main">
               <div>
-                <h4 className="font-medium text-white">Currency</h4>
-                <p className="text-sm text-white/50">Select your default currency</p>
+                <h4 className="font-medium text-text-main">Currency</h4>
+                <p className="text-sm text-text-muted">Select your default currency</p>
               </div>
-              <select className="bg-surface-bright border border-white/10 rounded-lg px-3 py-1 text-white focus:outline-none focus:border-primary">
+              <select className="bg-surface-bright border border-border-main rounded-lg px-3 py-1 text-text-main focus:outline-none focus:border-primary">
                 <option>PKR (Rs.)</option>
                 <option>USD ($)</option>
                 <option>EUR (€)</option>

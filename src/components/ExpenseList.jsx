@@ -4,7 +4,7 @@ import ExpenseItem from './ExpenseItem';
 const ExpenseList = ({ expenses = [] }) => {
   if (expenses.length === 0) {
     return (
-      <div className="text-center py-8 text-white/50">
+      <div className="text-center py-8 text-text-muted">
         No transactions yet.
       </div>
     );
