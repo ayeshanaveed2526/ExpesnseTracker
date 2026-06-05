@@ -1,1 +1,31 @@
 @import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&display=swap');
+
+@theme {
+  --color-surface: #131313;
+  --color-surface-bright: #3A3939;
+  --color-primary: #CCFF00;
+  --color-secondary: #0F172A;
+  --color-success: #CCFF00;
+  --color-danger: #EF4444;
+
+  --font-hanken: 'Hanken Grotesk', sans-serif;
+  --font-lexend: 'Lexend', sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-surface);
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: var(--font-lexend); /* Mobile default */
+  }
+
+  @media (min-width: 768px) {
+    body {
+      font-family: var(--font-hanken); /* Desktop default */
+    }
+  }
+}
