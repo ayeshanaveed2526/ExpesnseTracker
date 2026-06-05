@@ -7,6 +7,8 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
   const [category, setCategory] = useState('Food');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
+  const [error, setError] = useState('');
+
   useEffect(() => {
     if (initialData) {
       setAmount(initialData.amount);
@@ -22,7 +24,18 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!amount || !description || !date) return;
+    setError('');
+
+    if (!amount || !description || !date) {
+      setError('All fields are required.');
+      return;
+    }
+
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      setError('Amount must be a positive number greater than zero.');
+      return;
+    }
 
     const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
@@ -50,6 +63,12 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
       <h2 className="text-xl font-bold mb-6 text-text-main">{initialData ? 'Edit Transaction' : 'Record Transaction'}</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-xl text-sm font-medium">
+            {error}
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-medium text-text-muted mb-1">Amount (Rs.)</label>
           <input 
@@ -58,6 +77,8 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="w-full bg-surface border border-border-main rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-lg"
+            min="0"
+            step="any"
           />
         </div>
 

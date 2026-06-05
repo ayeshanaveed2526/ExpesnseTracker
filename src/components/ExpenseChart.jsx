@@ -4,7 +4,7 @@ import { Doughnut } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const ExpenseChart = ({ expenses = [] }) => {
+const ExpenseChart = ({ expenses = [], theme = 'dark' }) => {
   const expenseItems = expenses.filter(e => e.type === 'expense');
   
   const categoryTotals = expenseItems.reduce((acc, curr) => {
@@ -32,6 +32,12 @@ const ExpenseChart = ({ expenses = [] }) => {
     ],
   };
 
+  const isLight = theme === 'light';
+  const textColor = isLight ? '#64748b' : '#a1a1aa';
+  const tooltipBg = isLight ? '#ffffff' : '#18181b';
+  const tooltipText = isLight ? '#0f172a' : '#ffffff';
+  const tooltipBorder = isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -46,7 +52,7 @@ const ExpenseChart = ({ expenses = [] }) => {
       legend: {
         position: 'right',
         labels: {
-          color: 'var(--text-muted)',
+          color: textColor,
           usePointStyle: true,
           padding: 20,
           font: {
@@ -56,10 +62,10 @@ const ExpenseChart = ({ expenses = [] }) => {
         },
       },
       tooltip: {
-        backgroundColor: '#18181b',
+        backgroundColor: tooltipBg,
         titleColor: '#10B981',
-        bodyColor: 'var(--text-main)',
-        borderColor: 'rgba(255,255,255,0.1)',
+        bodyColor: tooltipText,
+        borderColor: tooltipBorder,
         borderWidth: 1,
         padding: 12,
         cornerRadius: 8,

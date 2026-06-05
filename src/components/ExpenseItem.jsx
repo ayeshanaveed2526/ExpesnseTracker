@@ -1,11 +1,11 @@
 import React from 'react';
 import { ShoppingBag, Coffee, Car, Home, Wallet, Pencil, Trash2 } from 'lucide-react';
-import { useOutletContext } from 'react-router-dom';
 
-const ExpenseItem = ({ id, title, date, amount, category, type, index = 0 }) => {
-  const context = useOutletContext();
-  const onEdit = context?.onEdit;
-  const onDelete = context?.onDelete;
+
+const ExpenseItem = ({ id, title, date, amount, category, type, index = 0, onEdit, onDelete }) => {
+  
+  
+  
 
   const getIcon = () => {
     switch(category) {

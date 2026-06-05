@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, NavLink, useLocation, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Wallet, ArrowRightLeft, Settings, Plus } from 'lucide-react';
-import Dashboard from './components/Dashboard';
+import { Settings as SettingsIcon, Plus } from 'lucide-react';
+import Summary from './components/Summary';
+import ExpenseChart from './components/ExpenseChart';
 import Transactions from './components/Transactions';
 import Budgets from './components/Budgets';
-import SettingsView from './components/Settings';
+import Settings from './components/Settings';
 import ExpenseForm from './components/ExpenseForm';
 
 const initialExpenses = [
@@ -20,147 +20,14 @@ const initialBudgets = [
   { category: 'Housing', limit: 40000 },
 ];
 
-function Layout({ expenses, onAddExpense, onEditExpense, onDeleteExpense, budgets, onUpdateBudget, theme, toggleTheme }) {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [expenseToEdit, setExpenseToEdit] = useState(null);
-  const location = useLocation();
-
-  const handleAddOrEdit = (exp) => {
-    if (expenseToEdit) {
-      onEditExpense(exp);
-    } else {
-      onAddExpense(exp);
-    }
-    setIsFormOpen(false);
-    setExpenseToEdit(null);
-  };
-
-  const openAddForm = () => {
-    setExpenseToEdit(null);
-    setIsFormOpen(true);
-  };
-
-  const openEditForm = (exp) => {
-    setExpenseToEdit(exp);
-    setIsFormOpen(true);
-  };
-
-  const getPageTitle = () => {
-    switch(location.pathname) {
-      case '/transactions': return 'Transactions';
-      case '/budgets': return 'Budgets';
-      case '/settings': return 'Settings';
-      default: return 'Dashboard';
-    }
-  };
-
-  return (
-    <div className={`min-h-screen flex flex-col md:flex-row bg-surface text-text-main relative overflow-hidden ${theme === 'dark' ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-surface to-surface' : ''}`}>
-      
-      {/* Animated Grainy Background */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 -left-1/4 w-3/4 h-3/4 bg-primary rounded-full mix-blend-multiply filter blur-[100px] opacity-10 animate-blob"></div>
-        <div className="absolute top-0 -right-1/4 w-3/4 h-3/4 bg-emerald-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-10 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-1/4 left-1/4 w-3/4 h-3/4 bg-teal-800 rounded-full mix-blend-multiply filter blur-[100px] opacity-10 animate-blob animation-delay-4000"></div>
-        <div className="absolute inset-0 bg-grain opacity-[0.03]"></div>
-      </div>
-
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-[280px] bg-surface-bright/50 backdrop-blur-xl border-r border-border-main p-6 h-screen sticky top-0 z-50">
-        <div className="flex items-center gap-3 mb-12">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center text-surface font-bold text-xl shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-            ET
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-text-main to-text-muted bg-clip-text text-transparent">Expense Tracker</h1>
-        </div>
-
-        <nav className="flex-1 space-y-2">
-          <NavItem to="/" icon={<LayoutDashboard size={20} />} label="Dashboard" />
-          <NavItem to="/transactions" icon={<ArrowRightLeft size={20} />} label="Transactions" />
-          <NavItem to="/budgets" icon={<Wallet size={20} />} label="Budgets" />
-          <NavItem to="/settings" icon={<Settings size={20} />} label="Settings" />
-        </nav>
-
-        <button 
-          onClick={openAddForm}
-          className="mt-auto w-full bg-primary text-secondary font-semibold py-3 rounded-xl flex items-center justify-center gap-2 hover:scale-95 transition-transform active:scale-90 shadow-lg shadow-primary/20"
-        >
-          <Plus size={20} />
-          <span>Record Expense</span>
-        </button>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 max-w-6xl mx-auto w-full relative z-10">
-        <header className="flex justify-between items-center mb-8 md:hidden">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-emerald-600 flex items-center justify-center text-surface font-bold shadow-[0_0_10px_rgba(16,185,129,0.4)]">ET</div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-text-main to-text-muted bg-clip-text text-transparent">{getPageTitle()}</h1>
-          </div>
-        </header>
-
-        <Outlet context={{ expenses, onEdit: openEditForm, onDelete: onDeleteExpense, budgets, onUpdateBudget, theme, toggleTheme }} />
-      </main>
-
-      {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-surface-bright border-t border-border-main px-6 py-4 flex justify-between items-center z-40">
-        <MobileNavItem to="/" icon={<LayoutDashboard size={24} />} />
-        <MobileNavItem to="/transactions" icon={<ArrowRightLeft size={24} />} />
-        <div className="relative -top-6">
-          <button 
-            onClick={openAddForm}
-            className="w-14 h-14 bg-primary text-secondary rounded-full flex items-center justify-center shadow-lg shadow-primary/20 hover:scale-95 transition-transform active:scale-90 border-4 border-surface"
-          >
-            <Plus size={28} />
-          </button>
-        </div>
-        <MobileNavItem to="/budgets" icon={<Wallet size={24} />} />
-        <MobileNavItem to="/settings" icon={<Settings size={24} />} />
-      </div>
-
-      {/* Expense Form Modal */}
-      {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-md animate-in slide-in-from-bottom-8 duration-300">
-            <ExpenseForm 
-              onClose={() => { setIsFormOpen(false); setExpenseToEdit(null); }} 
-              onSave={handleAddOrEdit} 
-              initialData={expenseToEdit}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function NavItem({ to, icon, label }) {
-  return (
-    <NavLink 
-      to={to} 
-      className={({ isActive }) => `w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${isActive ? 'bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-[inset_2px_0_0_rgba(16,185,129,1)]' : 'text-text-muted hover:bg-glass hover:text-text-main hover:translate-x-1'}`}
-    >
-      {icon}
-      <span className="font-medium tracking-wide">{label}</span>
-    </NavLink>
-  );
-}
-
-function MobileNavItem({ to, icon }) {
-  return (
-    <NavLink 
-      to={to}
-      className={({ isActive }) => `flex flex-col items-center gap-1 transition-colors ${isActive ? 'text-primary' : 'text-text-muted hover:text-text-main'}`}
-    >
-      {icon}
-    </NavLink>
-  );
-}
-
 function App() {
   const [expenses, setExpenses] = useState(initialExpenses);
   const [budgets, setBudgets] = useState(initialBudgets);
   const [theme, setTheme] = useState('dark');
+  
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [expenseToEdit, setExpenseToEdit] = useState(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (theme === 'light') {
@@ -174,12 +41,14 @@ function App() {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
   };
 
-  const addExpense = (newExpense) => {
-    setExpenses([newExpense, ...expenses]);
-  };
-
-  const editExpense = (updatedExpense) => {
-    setExpenses(expenses.map(exp => exp.id === updatedExpense.id ? updatedExpense : exp));
+  const handleAddOrEdit = (exp) => {
+    if (expenseToEdit) {
+      setExpenses(expenses.map(e => e.id === exp.id ? exp : e));
+    } else {
+      setExpenses([exp, ...expenses]);
+    }
+    setIsFormOpen(false);
+    setExpenseToEdit(null);
   };
 
   const deleteExpense = (id) => {
@@ -190,15 +59,103 @@ function App() {
     setBudgets(budgets.map(b => b.category === category ? { ...b, limit: newLimit } : b));
   };
 
+  const openAddForm = () => {
+    setExpenseToEdit(null);
+    setIsFormOpen(true);
+  };
+
+  const openEditForm = (exp) => {
+    setExpenseToEdit(exp);
+    setIsFormOpen(true);
+  };
+
   return (
-    <Routes>
-      <Route path="/" element={<Layout expenses={expenses} onAddExpense={addExpense} onEditExpense={editExpense} onDeleteExpense={deleteExpense} budgets={budgets} onUpdateBudget={updateBudget} theme={theme} toggleTheme={toggleTheme} />}>
-        <Route index element={<Dashboard />} />
-        <Route path="transactions" element={<Transactions />} />
-        <Route path="budgets" element={<Budgets />} />
-        <Route path="settings" element={<SettingsView />} />
-      </Route>
-    </Routes>
+    <div className={`min-h-screen bg-surface text-text-main relative overflow-x-hidden ${theme === 'dark' ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-surface to-surface' : ''}`}>
+      
+      {/* Animated Grainy Background */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 -left-1/4 w-3/4 h-3/4 bg-primary rounded-full filter blur-[100px] opacity-10 animate-blob"></div>
+        <div className="absolute top-0 -right-1/4 w-3/4 h-3/4 bg-emerald-500 rounded-full filter blur-[100px] opacity-10 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-1/4 left-1/4 w-3/4 h-3/4 bg-teal-800 rounded-full filter blur-[100px] opacity-10 animate-blob animation-delay-4000"></div>
+        <div className="absolute inset-0 bg-grain opacity-[0.03]"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        
+        {/* Header */}
+        <header className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4 bg-surface-bright/40 backdrop-blur-md border border-border-main p-4 rounded-2xl shadow-xl">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.4)] flex-shrink-0 bg-white">
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-text-main to-text-muted bg-clip-text text-transparent">Expense Tracker</h1>
+          </div>
+          
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <button 
+              onClick={openAddForm}
+              className="flex-1 sm:flex-none bg-primary text-secondary font-semibold py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 hover:scale-95 transition-transform active:scale-90 shadow-lg shadow-primary/20"
+            >
+              <Plus size={20} />
+              <span>Record Transaction</span>
+            </button>
+            
+            <button 
+              onClick={() => setIsSettingsOpen(true)}
+              className="p-2.5 bg-surface rounded-xl border border-border-main text-text-muted hover:text-text-main transition-colors hover:scale-95"
+            >
+              <SettingsIcon size={20} />
+            </button>
+          </div>
+        </header>
+
+        {/* Top Summary Row */}
+        <div className="mb-8">
+          <Summary expenses={expenses} />
+        </div>
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left Column (Charts & Budgets) */}
+          <div className="lg:col-span-7 space-y-8">
+            <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <ExpenseChart expenses={expenses} theme={theme} />
+            </div>
+            <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <Budgets expenses={expenses} budgets={budgets} onUpdateBudget={updateBudget} />
+            </div>
+          </div>
+
+          {/* Right Column (Transactions) */}
+          <div className="lg:col-span-5 h-[800px] overflow-hidden flex flex-col animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <Transactions expenses={expenses} onEdit={openEditForm} onDelete={deleteExpense} />
+          </div>
+
+        </div>
+      </div>
+
+      {/* Modals */}
+      {isFormOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-md animate-in slide-in-from-bottom-8 duration-300">
+            <ExpenseForm 
+              onClose={() => { setIsFormOpen(false); setExpenseToEdit(null); }} 
+              onSave={handleAddOrEdit} 
+              initialData={expenseToEdit}
+            />
+          </div>
+        </div>
+      )}
+
+      {isSettingsOpen && (
+        <Settings 
+          theme={theme} 
+          toggleTheme={toggleTheme} 
+          onClose={() => setIsSettingsOpen(false)} 
+        />
+      )}
+    </div>
   );
 }
 

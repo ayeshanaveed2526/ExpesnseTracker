@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+
 import ExpenseList from './ExpenseList';
 import { ArrowUpDown } from 'lucide-react';
 
-const Transactions = () => {
-  const { expenses } = useOutletContext();
+const Transactions = ({ expenses, onEdit, onDelete }) => {
+  
   const [sortOrder, setSortOrder] = useState('newest');
 
   const sortedExpenses = [...expenses].sort((a, b) => {
@@ -39,7 +39,7 @@ const Transactions = () => {
           </select>
         </div>
       </div>
-      <ExpenseList expenses={sortedExpenses} />
+      <ExpenseList expenses={sortedExpenses} onEdit={onEdit} onDelete={onDelete} />
     </div>
   );
 };

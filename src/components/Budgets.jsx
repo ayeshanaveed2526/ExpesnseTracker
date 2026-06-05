@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+
 import { Pencil, Check, X } from 'lucide-react';
 
-const Budgets = () => {
-  const { expenses, budgets, onUpdateBudget } = useOutletContext();
+const Budgets = ({ expenses, budgets, onUpdateBudget }) => {
+  
   const [editingCategory, setEditingCategory] = useState(null);
   const [editLimit, setEditLimit] = useState('');
   
@@ -25,10 +25,12 @@ const Budgets = () => {
 
   const saveEdit = (category) => {
     const limitNum = parseFloat(editLimit);
-    if (!isNaN(limitNum) && limitNum >= 0) {
+    if (!isNaN(limitNum) && limitNum > 0) {
       onUpdateBudget(category, limitNum);
+      setEditingCategory(null);
+    } else {
+      alert("Budget limit must be a valid number greater than zero.");
     }
-    setEditingCategory(null);
   };
 
   return (
