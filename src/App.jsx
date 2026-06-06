@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Plus } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings as SettingsIcon, Plus, Sun, Moon, Sparkles } from 'lucide-react';
 import Summary from './components/Summary';
 import ExpenseChart from './components/ExpenseChart';
-import Transactions from './components/Transactions';
 import Budgets from './components/Budgets';
 import Settings from './components/Settings';
 import ExpenseForm from './components/ExpenseForm';
+import Transactions from './components/Transactions';
 
 const initialExpenses = [
   { id: 1, title: 'Grocery Shopping', date: '2026-10-24', amount: 4500, category: 'Food', type: 'expense' },
@@ -19,6 +19,13 @@ const initialBudgets = [
   { category: 'Transport', limit: 10000 },
   { category: 'Housing', limit: 40000 },
 ];
+
+const CURRENCY_SYMBOLS = {
+  'PKR': 'Rs.',
+  'USD': '$',
+  'EUR': '€',
+  'GBP': '£'
+};
 
 function App() {
   const [expenses, setExpenses] = useState(() => {
@@ -34,6 +41,10 @@ function App() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('finpulse_theme') || 'dark';
   });
+
+  const [currency, setCurrency] = useState(() => {
+    return localStorage.getItem('finpulse_currency') || 'PKR';
+  });
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
@@ -46,6 +57,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('finpulse_budgets', JSON.stringify(budgets));
   }, [budgets]);
+
+  useEffect(() => {
+    localStorage.setItem('finpulse_currency', currency);
+  }, [currency]);
 
   useEffect(() => {
     localStorage.setItem('finpulse_theme', theme);
@@ -88,49 +103,66 @@ function App() {
     setIsFormOpen(true);
   };
 
+  const currencySymbol = CURRENCY_SYMBOLS[currency] || 'Rs.';
+
   return (
-    <div className={`min-h-screen bg-surface text-text-main relative overflow-x-hidden ${theme === 'dark' ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-surface to-surface' : ''}`}>
+    <div className={`min-h-screen bg-surface text-text-main relative overflow-x-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-950/20 via-zinc-950 to-zinc-950' : 'bg-slate-50'}`}>
       
-      {/* Animated Grainy Background */}
+      {/* Animated Glowing Background Blobs */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 -left-1/4 w-3/4 h-3/4 bg-primary rounded-full filter blur-[100px] opacity-10 animate-blob"></div>
-        <div className="absolute top-0 -right-1/4 w-3/4 h-3/4 bg-emerald-500 rounded-full filter blur-[100px] opacity-10 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-1/4 left-1/4 w-3/4 h-3/4 bg-teal-800 rounded-full filter blur-[100px] opacity-10 animate-blob animation-delay-4000"></div>
-        <div className="absolute inset-0 bg-grain opacity-[0.03]"></div>
+        <div className="absolute top-0 -left-1/4 w-[600px] h-[600px] bg-primary rounded-full filter blur-[120px] opacity-10 animate-blob"></div>
+        <div className="absolute top-1/4 -right-1/4 w-[600px] h-[600px] bg-emerald-500 rounded-full filter blur-[120px] opacity-10 animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-1/4 left-1/4 w-[600px] h-[600px] bg-teal-800 rounded-full filter blur-[120px] opacity-10 animate-blob animation-delay-4000"></div>
+        <div className="absolute inset-0 bg-grain opacity-[0.02]"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         
         {/* Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4 bg-surface-bright/40 backdrop-blur-md border border-border-main p-4 rounded-2xl shadow-xl">
+        <header className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4 bg-surface-bright/30 backdrop-blur-xl border border-border-main p-4 rounded-2xl shadow-xl transition-all duration-300">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.4)] flex-shrink-0 bg-white">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.3)] flex-shrink-0 bg-primary/10 flex items-center justify-center border border-primary/20">
+              <Sparkles size={22} className="text-primary animate-pulse" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-text-main to-text-muted bg-clip-text text-transparent"> FinTracker</h1>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-text-main to-text-main/70 bg-clip-text text-transparent flex items-center gap-2">
+                FinPulse
+              </h1>
+              <p className="text-[10px] text-text-muted font-medium tracking-widest uppercase">Smart Finance Hub</p>
+            </div>
           </div>
           
-          <div className="flex items-center gap-4 w-full sm:w-auto">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <button 
               onClick={openAddForm}
-              className="flex-1 sm:flex-none bg-primary text-secondary font-semibold py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 hover:scale-95 transition-transform active:scale-90 shadow-lg shadow-primary/20"
+              className="flex-1 sm:flex-none bg-primary text-zinc-950 font-bold py-2.5 px-5 rounded-xl flex items-center justify-center gap-2 hover:scale-[0.98] transition-all active:scale-95 shadow-lg shadow-primary/15 cursor-pointer"
             >
-              <Plus size={20} />
+              <Plus size={18} />
               <span>Record Transaction</span>
             </button>
             
+            {/* Theme Toggle Button */}
+            <button 
+              onClick={toggleTheme}
+              className="p-2.5 bg-surface-bright/50 rounded-xl border border-border-main text-text-muted hover:text-text-main transition-all hover:scale-95 cursor-pointer shadow-sm"
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
             <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="p-2.5 bg-surface rounded-xl border border-border-main text-text-muted hover:text-text-main transition-colors hover:scale-95"
+              className="p-2.5 bg-surface-bright/50 rounded-xl border border-border-main text-text-muted hover:text-text-main transition-all hover:scale-95 cursor-pointer shadow-sm"
+              aria-label="Settings"
             >
-              <SettingsIcon size={20} />
+              <SettingsIcon size={18} />
             </button>
           </div>
         </header>
 
         {/* Top Summary Row */}
         <div className="mb-8">
-          <Summary expenses={expenses} />
+          <Summary expenses={expenses} currencySymbol={currencySymbol} />
         </div>
 
         {/* Main Grid */}
@@ -139,16 +171,16 @@ function App() {
           {/* Left Column (Charts & Budgets) */}
           <div className="lg:col-span-7 space-y-8">
             <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              <ExpenseChart expenses={expenses} theme={theme} />
+              <ExpenseChart expenses={expenses} theme={theme} currencySymbol={currencySymbol} />
             </div>
             <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <Budgets expenses={expenses} budgets={budgets} onUpdateBudget={updateBudget} />
+              <Budgets expenses={expenses} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} />
             </div>
           </div>
 
           {/* Right Column (Transactions) */}
-          <div className="lg:col-span-5 h-[800px] overflow-hidden flex flex-col animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <Transactions expenses={expenses} onEdit={openEditForm} onDelete={deleteExpense} />
+          <div className="lg:col-span-5 h-[760px] overflow-hidden flex flex-col animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <Transactions expenses={expenses} onEdit={openEditForm} onDelete={deleteExpense} currencySymbol={currencySymbol} />
           </div>
 
         </div>
@@ -156,7 +188,7 @@ function App() {
 
       {/* Modals */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md animate-in slide-in-from-bottom-8 duration-300">
             <ExpenseForm 
               onClose={() => { setIsFormOpen(false); setExpenseToEdit(null); }} 
@@ -171,6 +203,12 @@ function App() {
         <Settings 
           theme={theme} 
           toggleTheme={toggleTheme} 
+          currency={currency}
+          setCurrency={setCurrency}
+          expenses={expenses}
+          setExpenses={setExpenses}
+          budgets={budgets}
+          setBudgets={setBudgets}
           onClose={() => setIsSettingsOpen(false)} 
         />
       )}

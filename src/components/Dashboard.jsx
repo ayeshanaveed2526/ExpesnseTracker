@@ -1,4 +1,3 @@
-import React from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import Summary from './Summary';
 import ExpenseChart from './ExpenseChart';

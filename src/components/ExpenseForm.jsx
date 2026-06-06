@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 const ExpenseForm = ({ onClose, onSave, initialData }) => {
@@ -11,14 +11,16 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
 
   useEffect(() => {
     if (initialData) {
-      setAmount(initialData.amount);
-      setDescription(initialData.title);
-      setCategory(initialData.category);
-      // Try to parse the formatted date back into YYYY-MM-DD
-      const d = new Date(initialData.date);
-      if (!isNaN(d)) {
-        setDate(d.toISOString().split('T')[0]);
-      }
+      setTimeout(() => {
+        setAmount(initialData.amount);
+        setDescription(initialData.title);
+        setCategory(initialData.category);
+        // Try to parse the formatted date back into YYYY-MM-DD
+        const d = new Date(initialData.date);
+        if (!isNaN(d)) {
+          setDate(d.toISOString().split('T')[0]);
+        }
+      }, 0);
     }
   }, [initialData]);
 
@@ -52,78 +54,99 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
   };
 
   return (
-    <div className="bg-surface-bright rounded-2xl p-6 shadow-2xl border border-border-main relative">
+    <div className="bg-zinc-900 border border-border-main p-6 rounded-2xl shadow-2xl relative max-w-md w-full">
       <button 
         onClick={onClose}
-        className="absolute top-4 right-4 text-text-muted hover:text-text-main transition-colors"
+        className="absolute top-4 right-4 text-text-muted hover:text-text-main transition-all p-1.5 rounded-lg hover:bg-glass cursor-pointer"
+        aria-label="Close form"
       >
-        <X size={24} />
+        <X size={18} />
       </button>
 
-      <h2 className="text-xl font-bold mb-6 text-text-main">{initialData ? 'Edit Transaction' : 'Record Transaction'}</h2>
+      <h2 className="text-lg font-bold text-text-main mb-6 tracking-tight">
+        {initialData ? 'Update Transaction' : 'New Transaction'}
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-xl text-sm font-medium">
+          <div className="bg-rose-500/10 border border-rose-500/20 text-rose-500 px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wide">
             {error}
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-text-muted mb-1">Amount (Rs.)</label>
-          <input 
-            type="number" 
-            placeholder="0.00"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full bg-surface border border-border-main rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-lg"
-            min="0"
-            step="any"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-text-muted mb-1">Description</label>
-          <input 
-            type="text" 
-            placeholder="What was this for?"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-surface border border-border-main rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-text-muted mb-1">Category</label>
-            <select 
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-surface border border-border-main rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary appearance-none"
-            >
-              <option value="Food">Food & Dining</option>
-              <option value="Transport">Transportation</option>
-              <option value="Housing">Housing</option>
-              <option value="Income">Income</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-text-muted mb-1">Date</label>
+          <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Amount</label>
+          <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
             <input 
-              type="date" 
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full bg-surface border border-border-main rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-primary [color-scheme:dark]"
+              type="number" 
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full bg-transparent text-text-main focus:outline-none text-xl font-bold px-4 py-3.5 placeholder:text-text-muted/30"
+              min="0"
+              step="any"
+              autoFocus
             />
           </div>
         </div>
 
-        <div className="pt-4">
+        <div>
+          <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Description</label>
+          <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+            <input 
+              type="text" 
+              placeholder="What did you pay for?"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full bg-transparent text-xs text-text-main focus:outline-none px-4 py-3.5 placeholder:text-text-muted/30"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Category</label>
+            <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+              <select 
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full bg-transparent text-xs text-text-main focus:outline-none px-4 py-3.5 cursor-pointer appearance-none font-bold"
+              >
+                <option value="Food" className="bg-zinc-900 text-text-main">Food & Dining</option>
+                <option value="Transport" className="bg-zinc-900 text-text-main">Transportation</option>
+                <option value="Housing" className="bg-zinc-900 text-text-main">Housing</option>
+                <option value="Income" className="bg-zinc-900 text-text-main">Income</option>
+              </select>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Date</label>
+            <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+              <input 
+                type="date" 
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full bg-transparent text-xs text-text-main focus:outline-none px-4 py-3.5 [color-scheme:dark] cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-4 flex gap-3">
+          <button 
+            type="button"
+            onClick={onClose}
+            className="flex-1 bg-surface-bright/50 border border-border-main hover:border-text-muted/20 text-xs font-bold p-3.5 rounded-xl text-text-main hover:scale-95 transition-all cursor-pointer shadow-sm"
+          >
+            Cancel
+          </button>
+          
           <button 
             type="submit"
-            className="w-full bg-primary text-secondary font-bold text-lg py-3 rounded-xl hover:bg-primary/90 hover:scale-[0.98] transition-all active:scale-95 shadow-lg shadow-primary/20"
+            className="flex-1 bg-primary text-zinc-950 font-bold p-3.5 rounded-xl text-xs hover:scale-95 transition-all cursor-pointer shadow-md shadow-primary/10"
           >
-            {initialData ? 'Save Changes' : 'Save Transaction'}
+            {initialData ? 'Save Changes' : 'Confirm Entry'}
           </button>
         </div>
       </form>
