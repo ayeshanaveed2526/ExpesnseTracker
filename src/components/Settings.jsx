@@ -10,10 +10,20 @@ const Settings = ({
   setExpenses, 
   budgets, 
   setBudgets, 
+  savingsGoal,
+  setSavingsGoal,
   onClose 
 }) => {
   const fileInputRef = useRef(null);
   const isLight = theme === 'light';
+
+  const CURRENCY_SYMBOLS = {
+    'PKR': 'Rs.',
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£'
+  };
+  const currencySymbol = CURRENCY_SYMBOLS[currency] || 'Rs.';
 
   const handleExport = () => {
     try {
@@ -128,6 +138,28 @@ const Settings = ({
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
                 </select>
+              </div>
+
+              {/* Savings Target Selector */}
+              <div className="flex items-center justify-between p-4 bg-surface/50 rounded-xl border border-border-main">
+                <div>
+                  <h4 className="text-sm font-semibold text-text-main">Savings Target</h4>
+                  <p className="text-[11px] text-text-muted">Set target amount manually</p>
+                </div>
+                <div className="flex items-center gap-1.5 bg-surface border border-border-main rounded-lg px-2.5 py-1.5 shadow-inner">
+                  <span className="text-xs text-text-muted">{currencySymbol}</span>
+                  <input 
+                    type="number"
+                    value={savingsGoal}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      if (!isNaN(val) && val >= 0) {
+                        setSavingsGoal(val);
+                      }
+                    }}
+                    className="bg-transparent text-xs text-text-main font-bold w-20 focus:outline-none"
+                  />
+                </div>
               </div>
 
             </div>

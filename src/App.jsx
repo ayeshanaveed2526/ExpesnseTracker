@@ -45,6 +45,11 @@ function App() {
   const [currency, setCurrency] = useState(() => {
     return localStorage.getItem('finpulse_currency') || 'PKR';
   });
+
+  const [savingsGoal, setSavingsGoal] = useState(() => {
+    const saved = localStorage.getItem('finpulse_savings_goal');
+    return saved ? parseFloat(saved) : 100000;
+  });
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
@@ -61,6 +66,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('finpulse_currency', currency);
   }, [currency]);
+
+  useEffect(() => {
+    localStorage.setItem('finpulse_savings_goal', savingsGoal.toString());
+  }, [savingsGoal]);
 
   useEffect(() => {
     localStorage.setItem('finpulse_theme', theme);
@@ -162,7 +171,12 @@ function App() {
 
         {/* Top Summary Row */}
         <div className="mb-8">
-          <Summary expenses={expenses} currencySymbol={currencySymbol} />
+          <Summary 
+            expenses={expenses} 
+            currencySymbol={currencySymbol} 
+            savingsGoal={savingsGoal}
+            onUpdateSavingsGoal={setSavingsGoal}
+          />
         </div>
 
         {/* Main Grid */}
@@ -209,6 +223,8 @@ function App() {
           setExpenses={setExpenses}
           budgets={budgets}
           setBudgets={setBudgets}
+          savingsGoal={savingsGoal}
+          setSavingsGoal={setSavingsGoal}
           onClose={() => setIsSettingsOpen(false)} 
         />
       )}

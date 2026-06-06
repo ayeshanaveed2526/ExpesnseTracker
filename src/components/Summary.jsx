@@ -1,12 +1,36 @@
-import { TrendingUp, TrendingDown, Wallet, CreditCard, Target } from 'lucide-react';
+import { useState } from 'react';
+import { TrendingUp, TrendingDown, Wallet, CreditCard, Target, Pencil, Check, X } from 'lucide-react';
 
-const Summary = ({ expenses = [], currencySymbol = 'Rs.' }) => {
+const Summary = ({ expenses = [], currencySymbol = 'Rs.', savingsGoal = 100000, onUpdateSavingsGoal }) => {
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [editGoalValue, setEditGoalValue] = useState(savingsGoal.toString());
+
   const totalIncome = expenses.filter(e => e.type === 'income').reduce((acc, curr) => acc + curr.amount, 0);
   const totalExpense = expenses.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
   const balance = totalIncome - totalExpense;
 
-  const savingsGoal = 100000;
   const savingsProgress = Math.max(0, Math.min((balance / savingsGoal) * 100, 100));
+
+  const handleStartEdit = () => {
+    setEditGoalValue(savingsGoal.toString());
+    setIsEditingGoal(true);
+  };
+
+  const handleSaveGoal = () => {
+    const val = parseFloat(editGoalValue);
+    if (!isNaN(val) && val > 0) {
+      if (onUpdateSavingsGoal) {
+        onUpdateSavingsGoal(val);
+      }
+      setIsEditingGoal(false);
+    } else {
+      alert("Savings target must be a valid number greater than zero.");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingGoal(false);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up">
@@ -58,8 +82,46 @@ const Summary = ({ expenses = [], currencySymbol = 'Rs.' }) => {
         <div>
           <div className="flex justify-between items-start mb-2">
             <span className="text-text-muted text-sm font-semibold tracking-wide uppercase">Savings Target</span>
-            <div className="p-2 bg-primary/10 rounded-xl text-primary border border-primary/10">
-              <Target size={18} />
+            
+            <div className="flex items-center gap-2">
+              {isEditingGoal ? (
+                <div className="flex items-center gap-1 bg-surface border border-border-main rounded-lg px-2 py-1 shadow-inner z-10">
+                  <span className="text-[10px] text-text-muted">{currencySymbol}</span>
+                  <input 
+                    type="number"
+                    value={editGoalValue}
+                    onChange={(e) => setEditGoalValue(e.target.value)}
+                    className="bg-transparent text-xs font-bold text-text-main w-20 focus:outline-none"
+                    autoFocus
+                  />
+                  <button 
+                    onClick={handleSaveGoal} 
+                    className="text-primary hover:text-emerald-400 p-0.5 cursor-pointer"
+                    title="Save"
+                  >
+                    <Check size={12} />
+                  </button>
+                  <button 
+                    onClick={handleCancelEdit} 
+                    className="text-rose-500 hover:text-rose-400 p-0.5 cursor-pointer"
+                    title="Cancel"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={handleStartEdit}
+                  className="p-1.5 rounded-lg bg-surface border border-border-main hover:scale-95 transition-all text-text-muted hover:text-primary cursor-pointer shadow-sm opacity-0 group-hover:opacity-100 focus:opacity-100"
+                  title="Edit Savings Target"
+                >
+                  <Pencil size={12} />
+                </button>
+              )}
+              
+              <div className="p-2 bg-primary/10 rounded-xl text-primary border border-primary/10">
+                <Target size={18} />
+              </div>
             </div>
           </div>
           <h3 className="text-3xl font-bold tracking-tight text-text-main flex items-baseline mb-2">

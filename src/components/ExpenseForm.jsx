@@ -12,14 +12,32 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
   useEffect(() => {
     if (initialData) {
       setTimeout(() => {
-        setAmount(initialData.amount);
-        setDescription(initialData.title);
-        setCategory(initialData.category);
-        // Try to parse the formatted date back into YYYY-MM-DD
-        const d = new Date(initialData.date);
-        if (!isNaN(d)) {
-          setDate(d.toISOString().split('T')[0]);
+        setAmount(initialData.amount ? initialData.amount.toString() : '');
+        setDescription(initialData.title || '');
+        setCategory(initialData.category || 'Food');
+        
+        let dateVal = '';
+        if (initialData.date) {
+          if (/^\d{4}-\d{2}-\d{2}$/.test(initialData.date)) {
+            dateVal = initialData.date;
+          } else {
+            const d = new Date(initialData.date);
+            if (!isNaN(d)) {
+              const year = d.getFullYear();
+              const month = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              dateVal = `${year}-${month}-${day}`;
+            }
+          }
         }
+        setDate(dateVal || new Date().toISOString().split('T')[0]);
+      }, 0);
+    } else {
+      setTimeout(() => {
+        setAmount('');
+        setDescription('');
+        setCategory('Food');
+        setDate(new Date().toISOString().split('T')[0]);
       }, 0);
     }
   }, [initialData]);
