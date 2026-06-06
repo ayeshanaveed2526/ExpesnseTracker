@@ -80,10 +80,12 @@ const Settings = ({
       localStorage.removeItem('finpulse_expenses_v2');
       localStorage.removeItem('finpulse_budgets_v2');
       localStorage.removeItem('finpulse_user_name');
+      localStorage.removeItem('finpulse_savings_goal');
       // Reset back to blank or defaults
       setExpenses([]);
       setBudgets([]);
       setUserName('');
+      setSavingsGoal(0);
       alert("App data has been cleared.");
       onClose();
     }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Bot, Sparkles, MessageSquare, Send, X, ArrowUpRight, TrendingUp, TrendingDown, Info, Award, AlertTriangle, ShieldCheck } from 'lucide-react';
 
-const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 'Rs.', savingsGoal = 100000 }) => {
+const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 'Rs.', savingsGoal = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');

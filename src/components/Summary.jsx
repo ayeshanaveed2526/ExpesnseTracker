@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TrendingUp, TrendingDown, Wallet, CreditCard, Target, Pencil, Check, X } from 'lucide-react';
 
-const Summary = ({ expenses = [], currencySymbol = 'Rs.', savingsGoal = 100000, onUpdateSavingsGoal }) => {
+const Summary = ({ expenses = [], currencySymbol = 'Rs.', savingsGoal = 0, onUpdateSavingsGoal }) => {
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [editGoalValue, setEditGoalValue] = useState(savingsGoal.toString());
 

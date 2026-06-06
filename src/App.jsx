@@ -40,7 +40,7 @@ function App() {
 
   const [savingsGoal, setSavingsGoal] = useState(() => {
     const saved = localStorage.getItem('finpulse_savings_goal');
-    return saved ? parseFloat(saved) : 100000;
+    return saved ? parseFloat(saved) : 0;
   });
   
   const [isFormOpen, setIsFormOpen] = useState(false);
