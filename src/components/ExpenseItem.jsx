@@ -1,5 +1,19 @@
 import { ShoppingBag, Coffee, Car, Home, Wallet, Pencil, Trash2 } from 'lucide-react';
 
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  if (dateStr.includes(',')) return dateStr; // Legacy format e.g. "Oct 24, 2026"
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const year = parts[0];
+    const monthIndex = parseInt(parts[1], 10) - 1;
+    const day = parseInt(parts[2], 10);
+    const dateObj = new Date(year, monthIndex, day);
+    return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  return dateStr;
+};
+
 const ExpenseItem = ({ id, title, date, amount, category, type, index = 0, onEdit, onDelete, currencySymbol = 'Rs.' }) => {
   
   const getCategoryConfig = () => {
@@ -55,7 +69,7 @@ const ExpenseItem = ({ id, title, date, amount, category, type, index = 0, onEdi
         <div className="min-w-0">
           <h4 className="font-bold text-text-main text-sm truncate leading-tight mb-1">{title}</h4>
           <div className="flex items-center gap-2 text-[10px] text-text-muted font-semibold">
-            <span>{date}</span>
+            <span>{formatDate(date)}</span>
             <span>•</span>
             <span className={`inline-flex px-1.5 py-0.5 rounded-md border text-[9px] uppercase tracking-wider ${config.bg}`}>
               {category}

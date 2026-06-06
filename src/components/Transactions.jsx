@@ -18,15 +18,30 @@ const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) =>
   });
 
   // Sorting
+  const getTimestamp = (dateStr) => {
+    if (!dateStr) return 0;
+    if (dateStr.includes(',')) {
+      const parsed = Date.parse(dateStr);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    const normalized = dateStr.replace(/-/g, '/');
+    const parsed = Date.parse(normalized);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
   const sortedExpenses = [...filteredExpenses].sort((a, b) => {
     if (sortOrder === 'newest') {
-      return new Date(b.date) - new Date(a.date);
+      const diff = getTimestamp(b.date) - getTimestamp(a.date);
+      return diff !== 0 ? diff : b.id - a.id;
     } else if (sortOrder === 'oldest') {
-      return new Date(a.date) - new Date(b.date);
+      const diff = getTimestamp(a.date) - getTimestamp(b.date);
+      return diff !== 0 ? diff : a.id - b.id;
     } else if (sortOrder === 'highest') {
-      return b.amount - a.amount;
+      const diff = b.amount - a.amount;
+      return diff !== 0 ? diff : b.id - a.id;
     } else if (sortOrder === 'lowest') {
-      return a.amount - b.amount;
+      const diff = a.amount - b.amount;
+      return diff !== 0 ? diff : b.id - a.id;
     }
     return 0;
   });

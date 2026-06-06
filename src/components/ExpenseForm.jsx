@@ -57,12 +57,10 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
       return;
     }
 
-    const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
     const updatedExpense = {
       id: initialData ? initialData.id : Date.now(),
       title: description,
-      date: formattedDate,
+      date: date,
       amount: parseFloat(amount),
       category: category === 'Income' ? 'Income' : category,
       type: category === 'Income' ? 'income' : 'expense'

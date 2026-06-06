@@ -38,8 +38,10 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
 
   // --- Bar Data (Cash Flow) ---
   const getMonthYear = (dateStr) => {
-    const d = new Date(dateStr);
-    if (isNaN(d)) return 'Unknown';
+    if (!dateStr) return 'Unknown';
+    const normalized = dateStr.includes(',') ? dateStr : dateStr.replace(/-/g, '/');
+    const d = new Date(normalized);
+    if (isNaN(d.getTime())) return 'Unknown';
     return d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
   };
 
