@@ -123,11 +123,11 @@ const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) =>
             onChange={(e) => setFilterCategory(e.target.value)}
             className="bg-transparent text-[11px] text-text-main focus:outline-none cursor-pointer appearance-none pr-3 w-full font-bold"
           >
-            <option value="All" className="bg-zinc-900 text-text-main">All Categories</option>
-            <option value="Food" className="bg-zinc-900 text-text-main">Food</option>
-            <option value="Transport" className="bg-zinc-900 text-text-main">Transport</option>
-            <option value="Housing" className="bg-zinc-900 text-text-main">Housing</option>
-            <option value="Income" className="bg-zinc-900 text-text-main">Income</option>
+            <option value="All" className="bg-surface-bright text-text-main">All Categories</option>
+            <option value="Food" className="bg-surface-bright text-text-main">Food</option>
+            <option value="Transport" className="bg-surface-bright text-text-main">Transport</option>
+            <option value="Housing" className="bg-surface-bright text-text-main">Housing</option>
+            <option value="Income" className="bg-surface-bright text-text-main">Income</option>
           </select>
         </div>
 
@@ -139,10 +139,10 @@ const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) =>
             onChange={(e) => setSortOrder(e.target.value)}
             className="bg-transparent text-[11px] text-text-main focus:outline-none cursor-pointer appearance-none pr-3 w-full font-bold"
           >
-            <option value="newest" className="bg-zinc-900 text-text-main">Newest First</option>
-            <option value="oldest" className="bg-zinc-900 text-text-main">Oldest First</option>
-            <option value="highest" className="bg-zinc-900 text-text-main">Highest Amount</option>
-            <option value="lowest" className="bg-zinc-900 text-text-main">Lowest Amount</option>
+            <option value="newest" className="bg-surface-bright text-text-main">Newest First</option>
+            <option value="oldest" className="bg-surface-bright text-text-main">Oldest First</option>
+            <option value="highest" className="bg-surface-bright text-text-main">Highest Amount</option>
+            <option value="lowest" className="bg-surface-bright text-text-main">Lowest Amount</option>
           </select>
         </div>
       </div>

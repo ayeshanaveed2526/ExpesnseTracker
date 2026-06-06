@@ -6,6 +6,8 @@ const Settings = ({
   toggleTheme, 
   currency, 
   setCurrency, 
+  userName,
+  setUserName,
   expenses, 
   setExpenses, 
   budgets, 
@@ -77,9 +79,11 @@ const Settings = ({
     if (confirmed) {
       localStorage.removeItem('finpulse_expenses_v2');
       localStorage.removeItem('finpulse_budgets_v2');
+      localStorage.removeItem('finpulse_user_name');
       // Reset back to blank or defaults
       setExpenses([]);
       setBudgets([]);
+      setUserName('');
       alert("App data has been cleared.");
       onClose();
     }
@@ -104,6 +108,21 @@ const Settings = ({
             <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-3">Preferences</h3>
             <div className="space-y-3">
               
+              {/* Profile Name */}
+              <div className="flex items-center justify-between p-4 bg-surface/50 rounded-xl border border-border-main">
+                <div>
+                  <h4 className="text-sm font-semibold text-text-main">Profile Name</h4>
+                  <p className="text-[11px] text-text-muted">Customize your greeting name</p>
+                </div>
+                <input 
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  placeholder="Your Name"
+                  className="bg-surface border border-border-main rounded-lg px-3 py-1.5 text-xs text-text-main font-bold focus:outline-none focus:border-primary w-36 text-right placeholder:text-text-muted/30"
+                />
+              </div>
+
               {/* Theme Selector */}
               <div className="flex items-center justify-between p-4 bg-surface/50 rounded-xl border border-border-main">
                 <div>
@@ -129,10 +148,10 @@ const Settings = ({
                   onChange={(e) => setCurrency(e.target.value)}
                   className="bg-surface border border-border-main rounded-lg px-3 py-1.5 text-xs text-text-main font-bold focus:outline-none focus:border-primary cursor-pointer"
                 >
-                  <option value="PKR">PKR (Rs.)</option>
-                  <option value="USD">USD ($)</option>
-                  <option value="EUR">EUR (€)</option>
-                  <option value="GBP">GBP (£)</option>
+                  <option value="PKR" className="bg-surface-bright text-text-main">PKR (Rs.)</option>
+                  <option value="USD" className="bg-surface-bright text-text-main">USD ($)</option>
+                  <option value="EUR" className="bg-surface-bright text-text-main">EUR (€)</option>
+                  <option value="GBP" className="bg-surface-bright text-text-main">GBP (£)</option>
                 </select>
               </div>
 

@@ -70,7 +70,7 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
   };
 
   return (
-    <div className="bg-zinc-900 border border-border-main p-6 rounded-2xl shadow-2xl relative max-w-md w-full">
+    <div className="bg-surface-bright border border-border-main p-6 rounded-2xl shadow-2xl relative max-w-md w-full">
       <button 
         onClick={onClose}
         className="absolute top-4 right-4 text-text-muted hover:text-text-main transition-all p-1.5 rounded-lg hover:bg-glass cursor-pointer"
@@ -92,7 +92,7 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
 
         <div>
           <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Amount</label>
-          <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+          <div className="relative flex items-center bg-surface rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
             <input 
               type="number" 
               placeholder="0.00"
@@ -108,7 +108,7 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
 
         <div>
           <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Description</label>
-          <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+          <div className="relative flex items-center bg-surface rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
             <input 
               type="text" 
               placeholder="What did you pay for?"
@@ -122,28 +122,28 @@ const ExpenseForm = ({ onClose, onSave, initialData }) => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Category</label>
-            <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+            <div className="relative flex items-center bg-surface rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
               <select 
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full bg-transparent text-xs text-text-main focus:outline-none px-4 py-3.5 cursor-pointer appearance-none font-bold"
               >
-                <option value="Food" className="bg-zinc-900 text-text-main">Food & Dining</option>
-                <option value="Transport" className="bg-zinc-900 text-text-main">Transportation</option>
-                <option value="Housing" className="bg-zinc-900 text-text-main">Housing</option>
-                <option value="Income" className="bg-zinc-900 text-text-main">Income</option>
+                <option value="Food" className="bg-surface-bright text-text-main">Food & Dining</option>
+                <option value="Transport" className="bg-surface-bright text-text-main">Transportation</option>
+                <option value="Housing" className="bg-surface-bright text-text-main">Housing</option>
+                <option value="Income" className="bg-surface-bright text-text-main">Income</option>
               </select>
             </div>
           </div>
           
           <div>
             <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Date</label>
-            <div className="relative flex items-center bg-zinc-950 rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+            <div className="relative flex items-center bg-surface rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
               <input 
                 type="date" 
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-transparent text-xs text-text-main focus:outline-none px-4 py-3.5 [color-scheme:dark] cursor-pointer"
+                className="w-full bg-transparent text-xs text-text-main focus:outline-none px-4 py-3.5 dark:[color-scheme:dark] cursor-pointer"
               />
             </div>
           </div>

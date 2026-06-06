@@ -6,6 +6,7 @@ import Budgets from './components/Budgets';
 import Settings from './components/Settings';
 import ExpenseForm from './components/ExpenseForm';
 import Transactions from './components/Transactions';
+import AiCoach from './components/AiCoach';
 
 const initialExpenses = [];
 
@@ -45,6 +46,24 @@ function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const [userName, setUserName] = useState(() => {
+    return localStorage.getItem('finpulse_user_name') || '';
+  });
+  
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (!userName) {
+      setShowOnboarding(true);
+    } else {
+      setShowOnboarding(false);
+    }
+  }, [userName]);
+
+  useEffect(() => {
+    localStorage.setItem('finpulse_user_name', userName);
+  }, [userName]);
 
   useEffect(() => {
     localStorage.setItem('finpulse_expenses_v2', JSON.stringify(expenses));
@@ -137,7 +156,9 @@ function App() {
               <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-text-main to-text-main/70 bg-clip-text text-transparent flex items-center gap-2">
                 FinPulse
               </h1>
-              <p className="text-[10px] text-text-muted font-medium tracking-widest uppercase">Smart Finance Hub</p>
+              <p className="text-[10px] text-text-muted font-medium tracking-widest uppercase">
+                {userName ? `Hi, ${userName} 👋` : 'Smart Finance Hub'}
+              </p>
             </div>
           </div>
           
@@ -219,6 +240,8 @@ function App() {
           toggleTheme={toggleTheme} 
           currency={currency}
           setCurrency={setCurrency}
+          userName={userName}
+          setUserName={setUserName}
           expenses={expenses}
           setExpenses={setExpenses}
           budgets={budgets}
@@ -228,6 +251,59 @@ function App() {
           onClose={() => setIsSettingsOpen(false)} 
         />
       )}
+      {showOnboarding && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="w-full max-w-md bg-surface-bright border border-border-main p-8 rounded-2xl shadow-2xl relative animate-in slide-in-from-bottom-8 duration-500">
+            <div className="flex flex-col items-center text-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                <Sparkles size={26} className="text-primary animate-pulse" />
+              </div>
+              <h2 className="text-2xl font-bold text-text-main tracking-tight mt-2">Welcome to FinPulse</h2>
+              <p className="text-xs text-text-muted max-w-xs font-medium">
+                Your smart personal finance companion. To customize your experience, what should we call you?
+              </p>
+              
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const nameVal = e.target.nameInput.value;
+                  if (nameVal.trim()) {
+                    setUserName(nameVal.trim());
+                    setShowOnboarding(false);
+                  }
+                }}
+                className="w-full mt-4 space-y-4"
+              >
+                <div className="relative flex items-center bg-surface rounded-xl border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
+                  <input 
+                    name="nameInput"
+                    type="text" 
+                    placeholder="Enter your name..."
+                    className="w-full bg-transparent text-text-main focus:outline-none text-sm font-bold px-4 py-3.5 placeholder:text-text-muted/30 text-center"
+                    required
+                    autoFocus
+                  />
+                </div>
+                
+                <button 
+                  type="submit"
+                  className="w-full bg-primary text-zinc-950 font-bold p-3.5 rounded-xl text-xs hover:scale-[0.98] active:scale-95 transition-all cursor-pointer shadow-lg shadow-primary/15"
+                >
+                  Get Started
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <AiCoach 
+        expenses={expenses} 
+        budgets={budgets} 
+        userName={userName} 
+        currencySymbol={currencySymbol} 
+        savingsGoal={savingsGoal} 
+      />
     </div>
   );
 }

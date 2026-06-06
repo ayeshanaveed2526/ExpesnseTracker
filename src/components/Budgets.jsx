@@ -182,10 +182,10 @@ const Budgets = ({ expenses, budgets = [], onUpdateBudget, onDeleteBudget, curre
                 <select 
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
-                  className="w-full bg-zinc-950 text-xs text-text-main border border-border-main rounded-lg px-2.5 py-2 cursor-pointer font-bold focus:outline-none focus:border-primary"
+                  className="w-full bg-surface text-xs text-text-main border border-border-main rounded-lg px-2.5 py-2 cursor-pointer font-bold focus:outline-none focus:border-primary"
                 >
                   {availableCategories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat} value={cat} className="bg-surface-bright text-text-main">{cat}</option>
                   ))}
                 </select>
               </div>
@@ -197,7 +197,7 @@ const Budgets = ({ expenses, budgets = [], onUpdateBudget, onDeleteBudget, curre
                   placeholder="0.00"
                   value={newLimit}
                   onChange={(e) => setNewLimit(e.target.value)}
-                  className="w-full bg-zinc-950 text-xs text-text-main border border-border-main rounded-lg px-2.5 py-2 font-bold focus:outline-none focus:border-primary"
+                  className="w-full bg-surface text-xs text-text-main border border-border-main rounded-lg px-2.5 py-2 font-bold focus:outline-none focus:border-primary"
                   min="1"
                   required
                 />
