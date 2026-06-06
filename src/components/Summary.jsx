@@ -36,7 +36,7 @@ const Summary = ({ expenses = [], currencySymbol = 'Rs.', savingsGoal = 100000, 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in-up">
       {/* Total Balance Card */}
       <div className="bg-surface-bright/20 backdrop-blur-xl rounded-2xl border border-border-main p-6 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.08)] hover:-translate-y-0.5 flex flex-col justify-between relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all duration-500"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all duration-500 pointer-events-none"></div>
         <div>
           <div className="flex justify-between items-start mb-4">
             <span className="text-text-muted text-sm font-semibold tracking-wide uppercase">Net Balance</span>
@@ -57,7 +57,7 @@ const Summary = ({ expenses = [], currencySymbol = 'Rs.', savingsGoal = 100000, 
       
       {/* Total Spending Card */}
       <div className="bg-surface-bright/20 backdrop-blur-xl rounded-2xl border border-border-main p-6 hover:border-rose-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(244,63,94,0.08)] hover:-translate-y-0.5 flex flex-col justify-between relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-all duration-500"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl group-hover:bg-rose-500/10 transition-all duration-500 pointer-events-none"></div>
         <div>
           <div className="flex justify-between items-start mb-4">
             <span className="text-text-muted text-sm font-semibold tracking-wide uppercase">Total Spendings</span>
@@ -78,7 +78,7 @@ const Summary = ({ expenses = [], currencySymbol = 'Rs.', savingsGoal = 100000, 
 
       {/* Savings Goal Card */}
       <div className="bg-surface-bright/20 backdrop-blur-xl rounded-2xl border border-border-main p-6 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.08)] hover:-translate-y-0.5 flex flex-col justify-between relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500 pointer-events-none"></div>
         <div>
           <div className="flex justify-between items-start mb-2">
             <span className="text-text-muted text-sm font-semibold tracking-wide uppercase">Savings Target</span>
