@@ -9,7 +9,7 @@ const Summary = ({ expenses = [], currencySymbol = 'Rs.', savingsGoal = 100000, 
   const totalExpense = expenses.filter(e => e.type === 'expense').reduce((acc, curr) => acc + curr.amount, 0);
   const balance = totalIncome - totalExpense;
 
-  const savingsProgress = Math.max(0, Math.min((balance / savingsGoal) * 100, 100));
+  const savingsProgress = savingsGoal > 0 ? Math.max(0, Math.min((balance / savingsGoal) * 100, 100)) : 0;
 
   const handleStartEdit = () => {
     setEditGoalValue(savingsGoal.toString());

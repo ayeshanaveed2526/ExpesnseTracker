@@ -7,18 +7,9 @@ import Settings from './components/Settings';
 import ExpenseForm from './components/ExpenseForm';
 import Transactions from './components/Transactions';
 
-const initialExpenses = [
-  { id: 1, title: 'Grocery Shopping', date: '2026-10-24', amount: 4500, category: 'Food', type: 'expense' },
-  { id: 2, title: 'Uber to Airport', date: '2026-10-23', amount: 1200, category: 'Transport', type: 'expense' },
-  { id: 3, title: 'Freelance Payment', date: '2026-10-21', amount: 45000, category: 'Income', type: 'income' },
-  { id: 4, title: 'Apartment Rent', date: '2026-10-01', amount: 25000, category: 'Housing', type: 'expense' },
-];
+const initialExpenses = [];
 
-const initialBudgets = [
-  { category: 'Food', limit: 20000 },
-  { category: 'Transport', limit: 10000 },
-  { category: 'Housing', limit: 40000 },
-];
+const initialBudgets = [];
 
 const CURRENCY_SYMBOLS = {
   'PKR': 'Rs.',
@@ -29,12 +20,12 @@ const CURRENCY_SYMBOLS = {
 
 function App() {
   const [expenses, setExpenses] = useState(() => {
-    const saved = localStorage.getItem('finpulse_expenses');
+    const saved = localStorage.getItem('finpulse_expenses_v2');
     return saved ? JSON.parse(saved) : initialExpenses;
   });
   
   const [budgets, setBudgets] = useState(() => {
-    const saved = localStorage.getItem('finpulse_budgets');
+    const saved = localStorage.getItem('finpulse_budgets_v2');
     return saved ? JSON.parse(saved) : initialBudgets;
   });
   
@@ -56,11 +47,11 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('finpulse_expenses', JSON.stringify(expenses));
+    localStorage.setItem('finpulse_expenses_v2', JSON.stringify(expenses));
   }, [expenses]);
 
   useEffect(() => {
-    localStorage.setItem('finpulse_budgets', JSON.stringify(budgets));
+    localStorage.setItem('finpulse_budgets_v2', JSON.stringify(budgets));
   }, [budgets]);
 
   useEffect(() => {
@@ -99,7 +90,16 @@ function App() {
   };
 
   const updateBudget = (category, newLimit) => {
-    setBudgets(budgets.map(b => b.category === category ? { ...b, limit: newLimit } : b));
+    const exists = budgets.some(b => b.category === category);
+    if (exists) {
+      setBudgets(budgets.map(b => b.category === category ? { ...b, limit: newLimit } : b));
+    } else {
+      setBudgets([...budgets, { category, limit: newLimit }]);
+    }
+  };
+
+  const deleteBudget = (category) => {
+    setBudgets(budgets.filter(b => b.category !== category));
   };
 
   const openAddForm = () => {
@@ -188,7 +188,7 @@ function App() {
               <ExpenseChart expenses={expenses} theme={theme} currencySymbol={currencySymbol} />
             </div>
             <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-              <Budgets expenses={expenses} budgets={budgets} onUpdateBudget={updateBudget} currencySymbol={currencySymbol} />
+              <Budgets expenses={expenses} budgets={budgets} onUpdateBudget={updateBudget} onDeleteBudget={deleteBudget} currencySymbol={currencySymbol} />
             </div>
           </div>
 

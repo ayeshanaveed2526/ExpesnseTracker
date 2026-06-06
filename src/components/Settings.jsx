@@ -75,15 +75,11 @@ const Settings = ({
       "CAUTION: Are you sure you want to permanently delete all transactions, custom budget limits, and history? This cannot be undone."
     );
     if (confirmed) {
-      localStorage.removeItem('finpulse_expenses');
-      localStorage.removeItem('finpulse_budgets');
+      localStorage.removeItem('finpulse_expenses_v2');
+      localStorage.removeItem('finpulse_budgets_v2');
       // Reset back to blank or defaults
       setExpenses([]);
-      setBudgets([
-        { category: 'Food', limit: 20000 },
-        { category: 'Transport', limit: 10000 },
-        { category: 'Housing', limit: 40000 },
-      ]);
+      setBudgets([]);
       alert("App data has been cleared.");
       onClose();
     }
