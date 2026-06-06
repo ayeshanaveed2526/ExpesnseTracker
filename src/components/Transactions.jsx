@@ -1,19 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ExpenseList from './ExpenseList';
 import { ArrowUpDown, Filter, Search, Download } from 'lucide-react';
 
-const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) => {
+const Transactions = ({ expenses, categories = [], onEdit, onDelete, onDuplicate, currencySymbol = 'Rs.' }) => {
   const [sortOrder, setSortOrder] = useState('newest');
   const [filterCategory, setFilterCategory] = useState('All');
   const [filterType, setFilterType] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
+  const searchRef = useRef(null);
+
+  // Focus the search box when the "/" keyboard shortcut fires.
+  useEffect(() => {
+    const focus = () => searchRef.current?.focus();
+    window.addEventListener('finpulse:focus-search', focus);
+    return () => window.removeEventListener('finpulse:focus-search', focus);
+  }, []);
 
   // Filtering
   const filteredExpenses = expenses.filter(exp => {
     const matchesCategory = filterCategory === 'All' || exp.category === filterCategory;
     const matchesType = filterType === 'All' || exp.type === filterType;
-    const matchesSearch = exp.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          exp.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const term = searchTerm.toLowerCase();
+    const matchesSearch =
+      exp.title.toLowerCase().includes(term) ||
+      exp.category.toLowerCase().includes(term) ||
+      (exp.notes || '').toLowerCase().includes(term);
     return matchesCategory && matchesType && matchesSearch;
   });
 
@@ -49,14 +60,15 @@ const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) =>
   // CSV Exporter
   const handleExportCSV = () => {
     try {
-      const csvHeaders = ["ID", "Title", "Date", "Amount", "Category", "Type"];
+      const csvHeaders = ["ID", "Title", "Date", "Amount", "Category", "Type", "Notes"];
       const csvRows = sortedExpenses.map(e => [
         e.id,
         `"${e.title.replace(/"/g, '""')}"`,
         e.date,
         e.amount,
         e.category,
-        e.type
+        e.type,
+        `"${(e.notes || '').replace(/"/g, '""')}"`
       ]);
       const csvContent = [csvHeaders.join(","), ...csvRows.map(r => r.join(","))].join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -91,11 +103,12 @@ const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) =>
       {/* Search Bar */}
       <div className="relative mb-3 flex items-center bg-surface-bright/50 rounded-xl px-3 py-2 border border-border-main focus-within:border-primary/50 transition-all shadow-inner">
         <Search size={16} className="text-text-muted mr-2" />
-        <input 
-          type="text" 
+        <input
+          ref={searchRef}
+          type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search descriptions..."
+          placeholder="Search descriptions, notes... ( / )"
           className="bg-transparent text-xs text-text-main focus:outline-none w-full placeholder:text-text-muted/50"
         />
       </div>
@@ -124,10 +137,11 @@ const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) =>
             className="bg-transparent text-[11px] text-text-main focus:outline-none cursor-pointer appearance-none pr-3 w-full font-bold"
           >
             <option value="All" className="bg-surface-bright text-text-main">All Categories</option>
-            <option value="Food" className="bg-surface-bright text-text-main">Food</option>
-            <option value="Transport" className="bg-surface-bright text-text-main">Transport</option>
-            <option value="Housing" className="bg-surface-bright text-text-main">Housing</option>
-            <option value="Income" className="bg-surface-bright text-text-main">Income</option>
+            {categories.map(cat => (
+              <option key={cat.name} value={cat.name} className="bg-surface-bright text-text-main">
+                {cat.emoji} {cat.name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -149,11 +163,13 @@ const Transactions = ({ expenses, onEdit, onDelete, currencySymbol = 'Rs.' }) =>
       
       {/* Scrollable list */}
       <div className="overflow-y-auto pr-1 flex-1 custom-scrollbar">
-        <ExpenseList 
-          expenses={sortedExpenses} 
-          onEdit={onEdit} 
-          onDelete={onDelete} 
+        <ExpenseList
+          expenses={sortedExpenses}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onDuplicate={onDuplicate}
           currencySymbol={currencySymbol}
+          categories={categories}
         />
       </div>
     </div>

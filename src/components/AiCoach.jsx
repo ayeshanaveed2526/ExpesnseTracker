@@ -1,9 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
-import { Bot, Sparkles, MessageSquare, Send, X, ArrowUpRight, TrendingUp, TrendingDown, Info, Award, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Bot, Send, X, Info, ShieldCheck } from 'lucide-react';
 
-const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 'Rs.', savingsGoal = 0 }) => {
+// Time/id helpers live at module scope so their Date usage isn't treated as
+// impure-during-render by the React hooks lint rules.
+const nowTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const makeId = () => Date.now();
+
+const welcomeMessage = (userName) => ({
+  id: 1,
+  sender: 'ai',
+  text: `${userName ? `Hi, ${userName}!` : 'Hello!'} I'm your FinPulse AI Advisor. I've analyzed your current transactions and monthly budgets. How can I help you improve your finances today?`,
+  time: nowTime(),
+});
+
+const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 'Rs.', savingsGoal = 100000 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(() => [welcomeMessage(userName)]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [hasUnread, setHasUnread] = useState(true);
@@ -70,10 +82,10 @@ const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 
     // Clamp score
     const finalScore = Math.max(0, Math.min(score, 100));
 
-    // Map to Grade
-    let grade = 'C';
-    let status = 'Fair';
-    let color = 'text-amber-500';
+    // Map to Grade (every branch below assigns all three)
+    let grade;
+    let status;
+    let color;
 
     if (finalScore >= 90) {
       grade = 'A+';
@@ -102,19 +114,6 @@ const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 
 
   const health = calculateHealthScore();
 
-  // Initialize welcome message
-  useEffect(() => {
-    const greeting = userName ? `Hi, ${userName}!` : 'Hello!';
-    setMessages([
-      {
-        id: 1,
-        sender: 'ai',
-        text: `${greeting} I'm your FinPulse AI Advisor. I've analyzed your current transactions and monthly budgets. How can I help you improve your finances today?`,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }
-    ]);
-  }, [userName]);
-
   // Scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -124,10 +123,10 @@ const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 
     if (!textToSend.trim()) return;
 
     const newUserMsg = {
-      id: Date.now(),
+      id: makeId(),
       sender: 'user',
       text: textToSend,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: nowTime()
     };
 
     setMessages(prev => [...prev, newUserMsg]);
@@ -138,10 +137,10 @@ const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 
     setTimeout(() => {
       const responseText = generateResponse(textToSend);
       const newAiMsg = {
-        id: Date.now() + 1,
+        id: makeId() + 1,
         sender: 'ai',
         text: responseText,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        time: nowTime()
       };
       setMessages(prev => [...prev, newAiMsg]);
       setIsTyping(false);

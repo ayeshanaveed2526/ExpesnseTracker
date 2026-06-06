@@ -5,9 +5,28 @@ import { PieChart, BarChart3 } from 'lucide-react';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
-const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' }) => {
+const FALLBACK_COLORS = ['#10B981', '#3B82F6', '#F59E0B', '#8B5CF6', '#EC4899', '#F43F5E', '#06B6D4', '#14B8A6'];
+
+// Vertical gradient for the bars (top bright → bottom deep).
+const makeBarGradient = (ctx, area, from, to) => {
+  const g = ctx.createLinearGradient(0, area.top, 0, area.bottom);
+  g.addColorStop(0, from);
+  g.addColorStop(1, to);
+  return g;
+};
+
+const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.', categories = [] }) => {
   const [activeTab, setActiveTab] = useState('category');
   const isLight = theme === 'light';
+
+  // --- Theme Colors ---
+  const textColor = isLight ? '#475569' : '#a1a1aa';
+  const strongText = isLight ? '#0f172a' : '#ffffff';
+  const gridColor = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)';
+  const tooltipBg = isLight ? '#ffffff' : '#18181b';
+  const tooltipText = isLight ? '#0f172a' : '#ffffff';
+  const tooltipBorder = isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
+  const ringTrack = isLight ? '#ffffff' : '#18181b';
 
   // --- Doughnut Data (Category Share) ---
   const expenseItems = expenses.filter(e => e.type === 'expense');
@@ -16,22 +35,25 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
     return acc;
   }, {});
 
+  const doughnutLabels = Object.keys(categoryTotals);
+  const doughnutValues = Object.values(categoryTotals);
+  const doughnutTotal = doughnutValues.reduce((a, b) => a + b, 0);
+
   const doughnutData = {
-    labels: Object.keys(categoryTotals),
+    labels: doughnutLabels,
     datasets: [
       {
-        data: Object.values(categoryTotals),
-        backgroundColor: [
-          '#10B981', // primary green
-          '#3B82F6', // blue
-          '#F59E0B', // amber
-          '#8B5CF6', // purple
-          '#EC4899', // pink
-        ],
-        borderWidth: 0,
-        hoverOffset: 12,
-        borderRadius: 4,
-        spacing: 2
+        data: doughnutValues,
+        backgroundColor: doughnutLabels.map((name, i) => {
+          const cat = categories.find(c => c.name === name);
+          return cat ? cat.color : FALLBACK_COLORS[i % FALLBACK_COLORS.length];
+        }),
+        borderColor: ringTrack,
+        borderWidth: 3,
+        hoverOffset: 14,
+        hoverBorderColor: ringTrack,
+        borderRadius: 6,
+        spacing: 2,
       },
     ],
   };
@@ -58,7 +80,6 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
     return acc;
   }, {});
 
-  // Sort months chronologically
   const months = Object.keys(monthlyData).sort((a, b) => {
     const parseMonth = (str) => {
       const parts = str.split(' ');
@@ -73,31 +94,76 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
       {
         label: 'Income',
         data: months.map(m => monthlyData[m].income),
-        backgroundColor: '#10B981',
-        borderRadius: 6,
-        maxBarThickness: 20,
+        backgroundColor: (ctx) => {
+          const { chartArea, ctx: c } = ctx.chart;
+          if (!chartArea) return '#10B981';
+          return makeBarGradient(c, chartArea, '#34D399', '#059669');
+        },
+        hoverBackgroundColor: '#6EE7B7',
+        borderRadius: 8,
+        borderSkipped: false,
+        maxBarThickness: 26,
       },
       {
         label: 'Expenses',
         data: months.map(m => monthlyData[m].expense),
-        backgroundColor: '#EF4444',
-        borderRadius: 6,
-        maxBarThickness: 20,
-      }
-    ]
+        backgroundColor: (ctx) => {
+          const { chartArea, ctx: c } = ctx.chart;
+          if (!chartArea) return '#F43F5E';
+          return makeBarGradient(c, chartArea, '#FB7185', '#E11D48');
+        },
+        hoverBackgroundColor: '#FDA4AF',
+        borderRadius: 8,
+        borderSkipped: false,
+        maxBarThickness: 26,
+      },
+    ],
   };
 
-  // --- Theme Colors ---
-  const textColor = isLight ? '#475569' : '#a1a1aa';
-  const gridColor = isLight ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.04)';
-  const tooltipBg = isLight ? '#ffffff' : '#18181b';
-  const tooltipText = isLight ? '#0f172a' : '#ffffff';
-  const tooltipBorder = isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)';
+  // --- Inline plugins (closure over theme + currency) ---
+
+  // Soft drop shadow under the doughnut arcs for depth.
+  const arcShadow = {
+    id: 'arcShadow',
+    beforeDatasetsDraw(chart) {
+      const { ctx } = chart;
+      ctx.save();
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 5;
+    },
+    afterDatasetsDraw(chart) {
+      chart.ctx.restore();
+    },
+  };
+
+  // Live "SPENT / total" readout in the middle of the ring.
+  const centerLabel = {
+    id: 'centerLabel',
+    afterDraw(chart) {
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return;
+      const cx = (chartArea.left + chartArea.right) / 2;
+      const cy = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = textColor;
+      ctx.font = "700 10px 'Lexend', sans-serif";
+      ctx.fillText('SPENT', cx, cy - 13);
+      ctx.fillStyle = strongText;
+      ctx.font = "700 17px 'Lexend', sans-serif";
+      ctx.fillText(`${currencySymbol} ${doughnutTotal.toLocaleString('en-US')}`, cx, cy + 6);
+      ctx.restore();
+    },
+  };
 
   const doughnutOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    cutout: '72%',
+    cutout: '70%',
+    layout: { padding: 6 },
+    animation: { animateRotate: true, animateScale: true, duration: 900, easing: 'easeOutQuart' },
     plugins: {
       legend: {
         position: 'right',
@@ -105,11 +171,8 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
           color: textColor,
           usePointStyle: true,
           pointStyle: 'circle',
-          padding: 16,
-          font: {
-            family: "'Lexend', sans-serif",
-            size: 11
-          }
+          padding: 14,
+          font: { family: "'Lexend', sans-serif", size: 11 },
         },
       },
       tooltip: {
@@ -122,33 +185,34 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
         cornerRadius: 8,
         displayColors: false,
         callbacks: {
-          label: function(context) {
-            return `${context.label}: ${currencySymbol} ${context.parsed.toLocaleString('en-US')}`;
-          }
-        }
-      }
+          label: (context) => {
+            const value = context.parsed;
+            const pct = doughnutTotal > 0 ? ((value / doughnutTotal) * 100).toFixed(1) : '0';
+            return `${context.label}: ${currencySymbol} ${value.toLocaleString('en-US')} (${pct}%)`;
+          },
+        },
+      },
     },
   };
 
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: { duration: 800, easing: 'easeOutQuart' },
     scales: {
       x: {
         grid: { display: false },
-        ticks: {
-          color: textColor,
-          font: { family: "'Lexend', sans-serif", size: 10 }
-        }
+        ticks: { color: textColor, font: { family: "'Lexend', sans-serif", size: 10 } },
       },
       y: {
         grid: { color: gridColor },
+        border: { display: false },
         ticks: {
           color: textColor,
           font: { family: "'Lexend', sans-serif", size: 10 },
-          callback: (value) => `${currencySymbol}${value.toLocaleString()}`
-        }
-      }
+          callback: (value) => `${currencySymbol}${value.toLocaleString()}`,
+        },
+      },
     },
     plugins: {
       legend: {
@@ -157,8 +221,8 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
           color: textColor,
           boxWidth: 12,
           usePointStyle: true,
-          font: { family: "'Lexend', sans-serif", size: 11 }
-        }
+          font: { family: "'Lexend', sans-serif", size: 11 },
+        },
       },
       tooltip: {
         backgroundColor: tooltipBg,
@@ -168,30 +232,29 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
         padding: 10,
         cornerRadius: 8,
         callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${currencySymbol} ${context.parsed.toLocaleString('en-US')}`;
-          }
-        }
-      }
-    }
+          // context.parsed is {x, y} for bars — read .y, not the whole object.
+          label: (context) => `${context.dataset.label}: ${currencySymbol} ${context.parsed.y.toLocaleString('en-US')}`,
+        },
+      },
+    },
   };
 
   return (
     <div className="bg-surface-bright/20 backdrop-blur-xl rounded-2xl border border-border-main p-6 h-[330px] flex flex-col justify-between hover:border-border-main/50 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.02)]">
-      
+
       {/* Header and Switch Tabs */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold text-text-main tracking-tight">Analytics</h2>
-        
+
         <div className="flex bg-surface-bright border border-border-main p-1 rounded-xl">
-          <button 
+          <button
             onClick={() => setActiveTab('category')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'category' ? 'bg-primary text-zinc-950 shadow-sm' : 'text-text-muted hover:text-text-main'}`}
           >
             <PieChart size={14} />
             <span>Category Share</span>
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('cashflow')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'cashflow' ? 'bg-primary text-zinc-950 shadow-sm' : 'text-text-muted hover:text-text-main'}`}
           >
@@ -206,7 +269,7 @@ const ExpenseChart = ({ expenses = [], theme = 'dark', currencySymbol = 'Rs.' })
         {activeTab === 'category' ? (
           expenseItems.length > 0 ? (
             <div className="h-full w-full py-1">
-              <Doughnut data={doughnutData} options={doughnutOptions} />
+              <Doughnut data={doughnutData} options={doughnutOptions} plugins={[arcShadow, centerLabel]} />
             </div>
           ) : (
             <div className="h-full flex items-center justify-center text-text-muted text-sm font-medium">

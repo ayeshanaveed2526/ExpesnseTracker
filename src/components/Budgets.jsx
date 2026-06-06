@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import { Pencil, Check, X, AlertTriangle, Trash2, Plus } from 'lucide-react';
+import { getCategory } from '../lib/categories';
 
-const Budgets = ({ expenses, budgets = [], onUpdateBudget, onDeleteBudget, currencySymbol = 'Rs.' }) => {
+const Budgets = ({ expenses, budgets = [], categories = [], onUpdateBudget, onDeleteBudget, currencySymbol = 'Rs.', periodLabel = 'This Month' }) => {
   const [editingCategory, setEditingCategory] = useState(null);
   const [editLimit, setEditLimit] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [newCategory, setNewCategory] = useState('Food');
+  const [newCategory, setNewCategory] = useState('');
   const [newLimit, setNewLimit] = useState('');
-  
+
   const expenseItems = expenses.filter(e => e.type === 'expense');
   const categoryTotals = expenseItems.reduce((acc, curr) => {
     acc[curr.category] = (acc[curr.category] || 0) + curr.amount;
     return acc;
   }, {});
 
-  const availableCategories = ['Food', 'Transport', 'Housing'].filter(
-    cat => !budgets.some(b => b.category === cat)
-  );
+  const availableCategories = categories
+    .filter(c => c.type === 'expense')
+    .map(c => c.name)
+    .filter(cat => !budgets.some(b => b.category === cat));
 
   const startEdit = (category, limit) => {
     setEditingCategory(category);
@@ -61,7 +63,10 @@ const Budgets = ({ expenses, budgets = [], onUpdateBudget, onDeleteBudget, curre
   return (
     <div className="space-y-6 animate-fade-in-up">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-bold text-text-main tracking-tight">Monthly Budgets</h2>
+        <div>
+          <h2 className="text-lg font-bold text-text-main tracking-tight">Budgets</h2>
+          <p className="text-[10px] text-text-muted font-semibold uppercase tracking-widest mt-0.5">{periodLabel} spend</p>
+        </div>
         {availableCategories.length > 0 && !isAdding && (
           <button 
             onClick={startAdd}
@@ -102,7 +107,10 @@ const Budgets = ({ expenses, budgets = [], onUpdateBudget, onDeleteBudget, curre
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <h3 className="font-bold text-text-main text-base">{budget.category}</h3>
+                  <h3 className="font-bold text-text-main text-base flex items-center gap-1.5">
+                    <span aria-hidden>{getCategory(categories, budget.category).emoji}</span>
+                    {budget.category}
+                  </h3>
                   <span className={`inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border mt-1.5 ${badgeColor}`}>
                     {isOver && <AlertTriangle size={10} />}
                     {statusLabel}
@@ -185,7 +193,9 @@ const Budgets = ({ expenses, budgets = [], onUpdateBudget, onDeleteBudget, curre
                   className="w-full bg-surface text-xs text-text-main border border-border-main rounded-lg px-2.5 py-2 cursor-pointer font-bold focus:outline-none focus:border-primary"
                 >
                   {availableCategories.map(cat => (
-                    <option key={cat} value={cat} className="bg-surface-bright text-text-main">{cat}</option>
+                    <option key={cat} value={cat} className="bg-surface-bright text-text-main">
+                      {getCategory(categories, cat).emoji} {cat}
+                    </option>
                   ))}
                 </select>
               </div>
