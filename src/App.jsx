@@ -21,15 +21,34 @@ const initialBudgets = [
 ];
 
 function App() {
-  const [expenses, setExpenses] = useState(initialExpenses);
-  const [budgets, setBudgets] = useState(initialBudgets);
-  const [theme, setTheme] = useState('dark');
+  const [expenses, setExpenses] = useState(() => {
+    const saved = localStorage.getItem('finpulse_expenses');
+    return saved ? JSON.parse(saved) : initialExpenses;
+  });
+  
+  const [budgets, setBudgets] = useState(() => {
+    const saved = localStorage.getItem('finpulse_budgets');
+    return saved ? JSON.parse(saved) : initialBudgets;
+  });
+  
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('finpulse_theme') || 'dark';
+  });
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
+    localStorage.setItem('finpulse_expenses', JSON.stringify(expenses));
+  }, [expenses]);
+
+  useEffect(() => {
+    localStorage.setItem('finpulse_budgets', JSON.stringify(budgets));
+  }, [budgets]);
+
+  useEffect(() => {
+    localStorage.setItem('finpulse_theme', theme);
     if (theme === 'light') {
       document.documentElement.classList.add('light');
     } else {
@@ -88,7 +107,7 @@ function App() {
             <div className="w-12 h-12 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(16,185,129,0.4)] flex-shrink-0 bg-white">
               <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-text-main to-text-muted bg-clip-text text-transparent">Expense Tracker</h1>
+            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-text-main to-text-muted bg-clip-text text-transparent"> FinTracker</h1>
           </div>
           
           <div className="flex items-center gap-4 w-full sm:w-auto">
