@@ -4,7 +4,7 @@ import AnimatedNumber from './AnimatedNumber';
 import { monthExpenseTotal } from '../lib/period';
 import { getCategory } from '../lib/categories';
 
-const Summary = ({ expenses = [], allExpenses = [], periodLabel = 'This Month', currencySymbol = 'Rs.', savingsGoal = 100000, onUpdateSavingsGoal, categories = [] }) => {
+const Summary = ({ expenses = [], allExpenses = [], periodLabel = 'This Month', currencySymbol = 'Rs.', savingsGoal = 0, onUpdateSavingsGoal, categories = [] }) => {
   const [isEditingGoal, setIsEditingGoal] = useState(false);
   const [editGoalValue, setEditGoalValue] = useState(savingsGoal.toString());
 
@@ -35,11 +35,11 @@ const Summary = ({ expenses = [], allExpenses = [], periodLabel = 'This Month', 
 
   const handleSaveGoal = () => {
     const val = parseFloat(editGoalValue);
-    if (!isNaN(val) && val > 0) {
+    if (!isNaN(val) && val >= 0) {
       if (onUpdateSavingsGoal) onUpdateSavingsGoal(val);
       setIsEditingGoal(false);
     } else {
-      alert("Savings target must be a valid number greater than zero.");
+      alert("Savings target must be a valid number greater than or equal to zero.");
     }
   };
 

@@ -13,7 +13,7 @@ const welcomeMessage = (userName) => ({
   time: nowTime(),
 });
 
-const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 'Rs.', savingsGoal = 100000 }) => {
+const AiCoach = ({ expenses = [], budgets = [], userName = '', currencySymbol = 'Rs.', savingsGoal = 0 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(() => [welcomeMessage(userName)]);
   const [inputText, setInputText] = useState('');
